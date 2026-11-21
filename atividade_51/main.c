@@ -5,17 +5,18 @@
 
 #define ARQUIVO_PADRAO "agenda.bin"
 
-static void ler_texto(const char *prompt, char *destino, int tamanho) {
+static int ler_texto(const char *prompt, char *destino, int tamanho) {
     printf("%s", prompt);
     if (fgets(destino, tamanho, stdin) == NULL) {
         destino[0] = '\0';
-        return;
+        return 0;
     }
 
     size_t len = strlen(destino);
     if (len > 0 && destino[len - 1] == '\n') {
         destino[len - 1] = '\0';
     }
+    return 1;
 }
 
 static int ler_inteiro(const char *prompt) {
@@ -23,7 +24,9 @@ static int ler_inteiro(const char *prompt) {
     int valor = 0;
 
     while (1) {
-        ler_texto(prompt, buffer, (int)sizeof(buffer));
+        if (!ler_texto(prompt, buffer, (int)sizeof(buffer))) {
+            return 0;
+        }
         if (sscanf(buffer, "%d", &valor) == 1) {
             return valor;
         }
@@ -99,7 +102,7 @@ int main(void) {
                 if (adicionar_missao_inicio(agenda, m)) {
                     printf("Missao adicionada no inicio.\n");
                 } else {
-                    printf("Falha ao adicionar missao.\n");
+                    printf("Falha ao adicionar missao (titulo vazio ou memoria insuficiente).\n");
                 }
                 break;
 
@@ -108,7 +111,7 @@ int main(void) {
                 if (adicionar_missao_fim(agenda, m)) {
                     printf("Missao adicionada no fim.\n");
                 } else {
-                    printf("Falha ao adicionar missao.\n");
+                    printf("Falha ao adicionar missao (titulo vazio ou memoria insuficiente).\n");
                 }
                 break;
 
@@ -118,7 +121,7 @@ int main(void) {
                 if (adicionar_missao_antes(agenda, id, m)) {
                     printf("Missao inserida antes do ID %d.\n", id);
                 } else {
-                    printf("Referencia nao encontrada ou falha de alocacao.\n");
+                    printf("Referencia nao encontrada, missao invalida ou falha de alocacao.\n");
                 }
                 break;
 
@@ -128,7 +131,7 @@ int main(void) {
                 if (adicionar_missao_apos(agenda, id, m)) {
                     printf("Missao inserida apos o ID %d.\n", id);
                 } else {
-                    printf("Referencia nao encontrada ou falha de alocacao.\n");
+                    printf("Referencia nao encontrada, missao invalida ou falha de alocacao.\n");
                 }
                 break;
 
@@ -142,7 +145,7 @@ int main(void) {
                 if (adicionar_lote_missoes(agenda, lote, 3)) {
                     printf("Lote importado. Total depois: %d\n", contar_missoes(agenda));
                 } else {
-                    printf("Falha ao importar lote.\n");
+                    printf("Falha ao importar lote (missao invalida ou memoria insuficiente).\n");
                 }
                 break;
             }
