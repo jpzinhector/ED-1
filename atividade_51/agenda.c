@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "agenda.h"
 
 typedef struct No {
@@ -72,6 +73,7 @@ static int deve_vir_antes(const Missao *a, const Missao *b) {
 
 Missao criar_missao(int id, const char *titulo, int prioridade) {
     Missao m;
+    memset(&m, 0, sizeof(m));
 
     m.id = id;
     snprintf(m.titulo, TAM_TITULO, "%s", titulo != NULL ? titulo : "");
@@ -119,6 +121,10 @@ Agenda *inicializar_agenda(void) {
 }
 
 int adicionar_missao_inicio(Agenda *agenda, Missao missao) {
+    if (!validar_missao(&missao)) {
+        return 0;
+    }
+
     if (agenda == NULL) {
         return 0;
     }
@@ -136,6 +142,10 @@ int adicionar_missao_inicio(Agenda *agenda, Missao missao) {
 }
 
 int adicionar_missao_fim(Agenda *agenda, Missao missao) {
+    if (!validar_missao(&missao)) {
+        return 0;
+    }
+
     if (agenda == NULL) {
         return 0;
     }
@@ -165,6 +175,12 @@ int adicionar_missao_fim(Agenda *agenda, Missao missao) {
 int adicionar_lote_missoes(Agenda *agenda, const Missao *missoes, int quantidade) {
     if (agenda == NULL || missoes == NULL || quantidade <= 0) {
         return 0;
+    }
+
+    for (int i = 0; i < quantidade; i++) {
+        if (!validar_missao(&missoes[i])) {
+            return 0;
+        }
     }
 
     No *inicio_lote = NULL;
@@ -212,6 +228,10 @@ Missao *buscar_missao_por_id(Agenda *agenda, int id) {
 }
 
 int adicionar_missao_apos(Agenda *agenda, int id_referencia, Missao missao) {
+    if (!validar_missao(&missao)) {
+        return 0;
+    }
+
     No *referencia = buscar_no_por_id(agenda, id_referencia);
     if (referencia == NULL) {
         return 0;
@@ -230,6 +250,10 @@ int adicionar_missao_apos(Agenda *agenda, int id_referencia, Missao missao) {
 }
 
 int adicionar_missao_antes(Agenda *agenda, int id_referencia, Missao missao) {
+    if (!validar_missao(&missao)) {
+        return 0;
+    }
+
     if (agenda == NULL || agenda->inicio == NULL) {
         return 0;
     }
